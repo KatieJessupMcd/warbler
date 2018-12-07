@@ -5,7 +5,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
 from forms import UserAddForm, LoginForm, MessageForm, EditUserProfileForm
-from models import db, connect_db, User, Message
+from models import db, connect_db, User, Message, Like
 
 CURR_USER_KEY = "curr_user"
 
@@ -13,17 +13,16 @@ app = Flask(__name__)
 
 # Get DB_URI from environ variable (useful for production/testing) or,
 # if not set there, use development local db.
-app.config['SQLALCHEMY_DATABASE_URI'] = (
-    os.environ.get('DATABASE_URL', 'postgres:///warbler'))
+app.config['SQLALCHEMY_DATABASE_URI'] = (os.environ.get(
+    'DATABASE_URL', 'postgres:///warbler'))
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
-app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = True
+app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', "it's a secret")
 toolbar = DebugToolbarExtension(app)
 
 connect_db(app)
-
 
 ##############################################################################
 # User signup/login/logout
@@ -96,8 +95,7 @@ def login():
     form = LoginForm()
 
     if form.validate_on_submit():
-        user = User.authenticate(form.username.data,
-                                 form.password.data)
+        user = User.authenticate(form.username.data, form.password.data)
 
         if user:
             do_login(user)
@@ -121,6 +119,7 @@ def logout():
 
 ##############################################################################
 # General user routes:
+
 
 @app.route('/users')
 def list_users():
@@ -147,12 +146,8 @@ def users_show(user_id):
 
     # snagging messages in order from the database;
     # user.messages won't be in order by default
-    messages = (Message
-                .query
-                .filter(Message.user_id == user_id)
-                .order_by(Message.timestamp.desc())
-                .limit(100)
-                .all())
+    messages = (Message.query.filter(Message.user_id == user_id).order_by(
+        Message.timestamp.desc()).limit(100).all())
     return render_template('users/show.html', user=user, messages=messages)
 
 
@@ -210,9 +205,9 @@ def stop_following(follow_id):
     return redirect(f"/users/{g.user.id}/following")
 
 
-@app.route('/users/<int:user_id>/profile', methods=["GET", "POST"])
-def profile(user_id):
-    """Update profile for current user."""
+@app.route('/users/<int:user_id>/edit', methods=["GET", "POST"])
+def edit(user_id):
+    """ profile for current user."""
     user = User.query.get_or_404(user_id)
     # import pdb; pdb.set_trace()
     form = EditUserProfileForm(obj=user)
@@ -225,18 +220,57 @@ def profile(user_id):
         user.username = form.username.data
         user.bio = form.bio.data
         user.email = form.email.data
-        user.password = form.password.data
+        password = form.password.data
         user.image_url = form.image_url.data
         user.header_image_url = form.header_image_url.data
 
-        if authenticate(user.username, user.password):
+        # import pdb
+        # pdb.set_trace()
+
+        if User.authenticate(g.user.username, password):
             db.session.commit()
             flash("edits saved")
-            return redirect('/users/<int:user_id>')
-        
+            return redirect(f'/users/{user.id}')
+        else:
+            # id the password doesn't work
+            flash("wrong password!")
+            return render_template('users/edit.html', form=form, user=user)
 
     else:
-        return render_template('users/detail.html', form=form, user=user)
+        return render_template('users/edit.html', form=form, user=user)
+
+
+# @app.route('/users/<int:user_id>/profile', methods=["GET", "POST"])
+# def profile(user_id):
+#     """Update profile for current user."""
+#     user = User.query.get_or_404(user_id)
+#     # import pdb; pdb.set_trace()
+#     form = EditUserProfileForm(obj=user)
+
+#     if not g.user:
+#         flash("Access unauthorized.", "danger")
+#         return redirect("/")
+
+#     if form.validate_on_submit():
+#         user.username = form.username.data
+#         user.bio = form.bio.data
+#         user.email = form.email.data
+#         # user.password = form.password.data
+#         user.image_url = form.image_url.data
+#         user.header_image_url = form.header_image_url.data
+
+#         # import pdb
+#         # pdb.set_trace()
+
+#         if User.authenticate(g.user.username, user.password):
+#             db.session.commit()
+#             flash("edits saved")
+#             return redirect('/users/<int:user_id>')
+#         else:
+#             return "there is no else"
+
+#     else:
+#         return render_template('users/edit.html', form=form, user=user)
 
 
 @app.route('/users/delete', methods=["POST"])
@@ -257,6 +291,7 @@ def delete_user():
 
 ##############################################################################
 # Messages routes:
+
 
 @app.route('/messages/new', methods=["GET", "POST"])
 def messages_add():
@@ -305,6 +340,37 @@ def messages_destroy(message_id):
 
 
 ##############################################################################
+# Likes routes:
+
+
+@app.route('/like/<int:msg_id>', methods=["GET"])
+def add_like(msg_id):
+    user_id = g.user.id
+    like = Like.query.filter_by(msg_id=msg_id, user_id=user_id).first()
+    if like:
+        db.session.delete(like)
+        db.session.commit()
+
+    else:
+        new_like = Like(msg_id=msg_id, user_id=user_id)
+        db.session.add(new_like)
+        db.session.commit()
+
+    return redirect('/')
+
+
+@app.route('/users/<int:user_id>/likes', methods=["GET"])
+def show_likes(user_id):
+
+    # import pdb
+    # pdb.set_trace()
+    messages = g.user.liked_msgs
+
+    return render_template(
+        'users/user_likes.html', messages=messages, user=g.user)
+
+
+##############################################################################
 # Homepage and error pages
 
 
@@ -317,13 +383,24 @@ def homepage():
     """
 
     if g.user:
-        messages = (Message
-                    .query
-                    .order_by(Message.timestamp.desc())
-                    .limit(100)
-                    .all())
+        # only from the users that the logged-in user is following, and that use
 
-        return render_template('home.html', messages=messages)
+        followings = g.user.following  #a list of followers's objects
+
+        # create a list of followers' name + g.user.name
+        following_ids = [following.id
+                         for following in followings] + [g.user.id]
+        # import pdb
+        # pdb.set_trace()
+
+        likes_msg_list = [msg.id for msg in g.user.liked_msgs]
+        # break up into lines to make it more readable
+        messages = (Message.query.filter(
+            Message.user_id.in_(following_ids)).order_by(
+                Message.timestamp.desc()).limit(100).all())
+
+        return render_template(
+            'home.html', messages=messages, Like=likes_msg_list)
 
     else:
         return render_template('home-anon.html')
@@ -335,6 +412,7 @@ def homepage():
 #   handled elsewhere)
 #
 # https://stackoverflow.com/questions/34066804/disabling-caching-in-flask
+
 
 @app.after_request
 def add_header(req):
