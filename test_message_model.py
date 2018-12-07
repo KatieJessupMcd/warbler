@@ -103,11 +103,10 @@ class MessageModelTestCase(TestCase):
         self.assertIsInstance(self.message1.timestamp, datetime)
         self.assertEqual(self.message2.text, "testing")
         self.assertEqual(self.message2.user_id, self.user1.id)
-        # import pdb; pdb.set_trace()
         self.assertIsInstance(self.message2.timestamp, datetime)
         
 
-    def test_is_msg1_created_by_user1_ture(self):
+    def test_is_msg1_created_by_user1_true(self):
         """is msg1 created by user1"""
 
         self.assertIn(self.message1, self.user1.messages)
@@ -122,40 +121,53 @@ class MessageModelTestCase(TestCase):
 
         self.assertEqual(self.message1.user, self.user1)
 
+    def test_is_user1_creator_of_msg2(self):
+        """is user1 the creator of msg2"""
+
+        self.assertEqual(self.message2.user, self.user1)
+
+    def test_is_user2_creator_of_msg2_false(self):
+        """is user2 the creator of msg2 - false"""
+        self.assertNotEqual(self.message2.user, self.user2)
+    
+    def test_is_user2_creator_of_msg1_false(self):
+        """is user2 the creator of msg1 - false"""
+        self.assertNotEqual(self.message1.user, self.user2)
+
     # def test_is_followed_by_true(self):
     #     """Does is_followed_by successfully detect when user1 is followed by user2"""
 
     #     self.assertIn(self.user2, self.user1.following)
 
 
-# def test_is_followed_by_false(self):
-#     """Does is_followed_by successfully detect when user1 is not followed by user2"""
+    # def test_is_followed_by_false(self):
+    #     """Does is_followed_by successfully detect when user1 is not followed by user2"""
 
-#     self.assertNotIn(self.user1, self.user2.following)
+    #     self.assertNotIn(self.user1, self.user2.following)
 
-# def test_user_signup(self):
-#     """does User.signup successfully create a new user given valid credentials that it is added to DB"""
+    # def test_user_signup(self):
+    #     """does User.signup successfully create a new user given valid credentials that it is added to DB"""
 
-#     self.assertEqual(self.new_user.username, "test")
-#     self.assertEqual(self.new_user.email, "test@test.com")
-#     self.assertNotEqual(self.new_user.password, "abcd123")
-#     self.assertEqual(self.new_user.image_url, "")
+    #     self.assertEqual(self.new_user.username, "test")
+    #     self.assertEqual(self.new_user.email, "test@test.com")
+    #     self.assertNotEqual(self.new_user.password, "abcd123")
+    #     self.assertEqual(self.new_user.image_url, "")
 
-# def test_user_authenticate_success(self):
-#     """Does User.authenticate successfully return a user when given a valid username and password"""
+    # def test_user_authenticate_success(self):
+    #     """Does User.authenticate successfully return a user when given a valid username and password"""
 
-#     autheticate_new_user = User.authenticate(self.new_user.username, "abcd123")
+    #     autheticate_new_user = User.authenticate(self.new_user.username, "abcd123")
 
-#     self.assertEqual(autheticate_new_user, self.new_user)
+    #     self.assertEqual(autheticate_new_user, self.new_user)
 
-# def test_user_authenticate_username_fail(self):
-#     """Does User.authenticate fail to return a user when the username is invalid"""
-#     autheticate_new_user = User.authenticate("random", "abcd123")
+    # def test_user_authenticate_username_fail(self):
+    #     """Does User.authenticate fail to return a user when the username is invalid"""
+    #     autheticate_new_user = User.authenticate("random", "abcd123")
 
-#     self.assertEqual(autheticate_new_user, False)
+    #     self.assertEqual(autheticate_new_user, False)
 
-# def test_user_authenticate_password_fail(self):
-#     """Does User.authenticate fail to return a user when the password is invalid"""
-#     autheticate_new_user = User.authenticate(self.new_user.username, "abcd567")
+    # def test_user_authenticate_password_fail(self):
+    #     """Does User.authenticate fail to return a user when the password is invalid"""
+    #     autheticate_new_user = User.authenticate(self.new_user.username, "abcd567")
 
-#     self.assertEqual(autheticate_new_user, False)
+    #     self.assertEqual(autheticate_new_user, False)
