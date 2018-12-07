@@ -59,7 +59,8 @@ class MessageModelTestCase(TestCase):
         # self.user2 = User(username="user2", email="user2@123.com", header_image_url="", bio="i am great", location="nowhere", password="abcdefg")
         # self.new_user = User.signup(username = "test", email="test@test.com", password="abcd123", image_url="")
         # self.follows2 = FollowersFollowee(self.user2.id, self.user1.id)
-        db.session.add(self.message1)
+        db.session.add_all([self.message1, self.message2])
+        # ^^needed to add add_all message2 as well
         db.session.commit()
 
         # import pdb; pdb.set_trace()
@@ -102,7 +103,9 @@ class MessageModelTestCase(TestCase):
         self.assertIsInstance(self.message1.timestamp, datetime)
         self.assertEqual(self.message2.text, "testing")
         self.assertEqual(self.message2.user_id, self.user1.id)
+        # import pdb; pdb.set_trace()
         self.assertIsInstance(self.message2.timestamp, datetime)
+        
 
     def test_is_msg1_created_by_user1_ture(self):
         """is msg1 created by user1"""
