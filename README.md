@@ -7,7 +7,7 @@ Jobly is a mock job listing and app that allows users to view companies as well 
 To clone the repository, run: 
 
 ```
-git clone https://github.com/KatieJessupMcd/react-jobly.git
+git clone https://github.com/KatieJessupMcd/warbler.git
 ```
 
 
