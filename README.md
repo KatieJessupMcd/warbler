@@ -1,6 +1,8 @@
 # Warbler
 
-Jobly is a mock job listing and app that allows users to view companies as well as apply to jobs posted by those companies. JSON web tokens and BCrypt was used for authorization and authentication for user signup and login. The frontend is built in React, and the backend is built in Node.js/Express. The database is written in PostgreSQL. Styling is done with Bootstrap. 
+Warler is a mock twitter clone. Users can signup/login, follow other others, be followed by other users, and create "warbles" (tweets). 
+
+BCrypt is used for user authentication/ authorization. Sessions are used to store current user information. The backend is built in Flask. The templating system Jinja is used for HTML. The database is PostrgreSQL. Tests are written for the views and models using the unittest module. 
 
 # Setup
 
