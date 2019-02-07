@@ -9,7 +9,7 @@ BCrypt is used for user authentication/ authorization. Sessions are used to stor
 To clone the repository, run: 
 
 ```
-git clone https://github.com/KatieJessupMcd/react-jobly.git
+git clone https://github.com/KatieJessupMcd/warbler.git
 ```
 
 
