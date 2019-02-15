@@ -4,6 +4,8 @@ Warler is a mock twitter clone. Users can signup/login, follow other others, be 
 
 BCrypt is used for user authentication/ authorization. Sessions are used to store current user information. The backend is built in Flask. The templating system Jinja is used for HTML. The database is PostrgreSQL. Tests are written for the views and models using the unittest module. 
 
+See a live demo here: https://warbler-katieg.herokuapp.com/
+
 # Setup
 
 To clone the repository, run: 
