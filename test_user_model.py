@@ -37,7 +37,7 @@ class UserModelTestCase(TestCase):
 
         self.user1 = User(username="user1", email="user1@123.com", image_url="abc", header_image_url="abc", bio="i am awesome", location="nonesuch", password="123456")
         self.user2 = User(username="user2", email="user2@123.com", header_image_url="", bio="i am great", location="nowhere", password="abcdefg")
-        self.new_user = User.signup(username = "test", email="test@test.com", password="abcd123", image_url="")
+        self.new_user = User.signup(username="test", email="test@test.com", password="abcd123", image_url="")
         # self.follows2 = FollowersFollowee(self.user2.id, self.user1.id)
         db.session.add_all([self.user1, self.user2])
         db.session.commit()
@@ -45,8 +45,6 @@ class UserModelTestCase(TestCase):
         # import pdb; pdb.set_trace()
         self.follows1 = FollowersFollowee(followee_id=self.user1.id, follower_id=self.user2.id)
         
-        
-
         db.session.add(self.follows1)
         db.session.commit()
 
