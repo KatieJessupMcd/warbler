@@ -11,6 +11,8 @@ CURR_USER_KEY = "curr_user"
 
 app = Flask(__name__)
 
+# app.register_error_handler(404, page_not_found)
+
 # Get DB_URI from environ variable (useful for production/testing) or,
 # if not set there, use development local db.
 app.config['SQLALCHEMY_DATABASE_URI'] = (os.environ.get(
@@ -287,6 +289,11 @@ def delete_user():
     db.session.commit()
 
     return redirect("/signup")
+
+@app.errorhandler(404)
+def page_not_found(e):
+    """custom page not found 404"""
+    return render_template('users/404.html')
 
 
 ##############################################################################
