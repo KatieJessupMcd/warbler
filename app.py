@@ -150,6 +150,7 @@ def users_show(user_id):
     # user.messages won't be in order by default
     messages = (Message.query.filter(Message.user_id == user_id).order_by(
         Message.timestamp.desc()).limit(100).all())
+    # messages -> [<Message 1003> <Message 1004>]
     return render_template('users/show.html', user=user, messages=messages)
 
 
