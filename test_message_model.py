@@ -29,7 +29,7 @@ db.create_all()
 
 
 class MessageModelTestCase(TestCase):
-    """Test views for messages."""
+    """Test models for messages."""
 
     def setUp(self):
         """Create test message, add sample data."""
@@ -134,40 +134,3 @@ class MessageModelTestCase(TestCase):
         """is user2 the creator of msg1 - false"""
         self.assertNotEqual(self.message1.user, self.user2)
 
-    # def test_is_followed_by_true(self):
-    #     """Does is_followed_by successfully detect when user1 is followed by user2"""
-
-    #     self.assertIn(self.user2, self.user1.following)
-
-
-    # def test_is_followed_by_false(self):
-    #     """Does is_followed_by successfully detect when user1 is not followed by user2"""
-
-    #     self.assertNotIn(self.user1, self.user2.following)
-
-    # def test_user_signup(self):
-    #     """does User.signup successfully create a new user given valid credentials that it is added to DB"""
-
-    #     self.assertEqual(self.new_user.username, "test")
-    #     self.assertEqual(self.new_user.email, "test@test.com")
-    #     self.assertNotEqual(self.new_user.password, "abcd123")
-    #     self.assertEqual(self.new_user.image_url, "")
-
-    # def test_user_authenticate_success(self):
-    #     """Does User.authenticate successfully return a user when given a valid username and password"""
-
-    #     autheticate_new_user = User.authenticate(self.new_user.username, "abcd123")
-
-    #     self.assertEqual(autheticate_new_user, self.new_user)
-
-    # def test_user_authenticate_username_fail(self):
-    #     """Does User.authenticate fail to return a user when the username is invalid"""
-    #     autheticate_new_user = User.authenticate("random", "abcd123")
-
-    #     self.assertEqual(autheticate_new_user, False)
-
-    # def test_user_authenticate_password_fail(self):
-    #     """Does User.authenticate fail to return a user when the password is invalid"""
-    #     autheticate_new_user = User.authenticate(self.new_user.username, "abcd567")
-
-    #     self.assertEqual(autheticate_new_user, False)
