@@ -392,13 +392,13 @@ def flag_add():
         return redirect("/")
 
     form = FlagForm()
-
+    
     if form.validate_on_submit():
-        reason = Message(text=form.text.data)
+        print("IN SUBMIT FORM") 
+        msg = Message(text=form.text.data)
         g.user.messages.append(msg)
         db.session.commit()
-
-        return redirect(f"/users/{g.user.id}")
+        return redirect(f"/")
 
     return render_template('flags/new.html', form=form)
 
@@ -416,7 +416,7 @@ def create_flag(msg_id):
         db.session.add(new_like)
         db.session.commit()
 
-    return redirect('/')
+    return redirect('/flag/new')
 
 
 ##############################################################################
