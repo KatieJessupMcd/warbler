@@ -4,7 +4,7 @@ from flask import Flask, render_template, request, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
-from forms import UserAddForm, LoginForm, MessageForm, EditUserProfileForm
+from forms import UserAddForm, LoginForm, MessageForm, EditUserProfileForm, FlagForm
 from models import db, connect_db, User, Message, Like
 
 CURR_USER_KEY = "curr_user"
@@ -376,6 +376,47 @@ def show_likes(user_id):
 
     return render_template(
         'users/user_likes.html', messages=messages, user=g.user)
+
+##############################################################################
+# Flag routes:
+
+@app.route('/flag/new', methods=["GET", "POST"])
+def flag_add():
+    """Add a flag message:
+
+    Show form if GET. If valid, update flag message and redirect to user page.
+    """
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    form = FlagForm()
+
+    if form.validate_on_submit():
+        reason = Message(text=form.text.data)
+        g.user.messages.append(msg)
+        db.session.commit()
+
+        return redirect(f"/users/{g.user.id}")
+
+    return render_template('flags/new.html', form=form)
+
+
+@app.route('/flag/<int:msg_id>', methods=["GET"])
+def create_flag(msg_id):
+    user_id = g.user.id
+    like = Like.query.filter_by(msg_id=msg_id, user_id=user_id).first()
+    if like:
+        db.session.delete(like)
+        db.session.commit()
+
+    else:
+        new_like = Like(msg_id=msg_id, user_id=user_id)
+        db.session.add(new_like)
+        db.session.commit()
+
+    return redirect('/')
 
 
 ##############################################################################
