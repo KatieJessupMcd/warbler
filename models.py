@@ -172,6 +172,17 @@ class Like(db.Model):
     user_id = db.Column(
         db.Integer, db.ForeignKey('users.id'), primary_key=True)
 
+class Flag(db.Model):
+    """Connection of flag <- users"""
+
+    __tablename__ = 'flags'
+
+    msg_id = db.Column(
+        db.Integer, db.ForeignKey('messages.id'), primary_key=True)
+
+    user_id = db.Column(
+        db.Integer, db.ForeignKey('users.id'), primary_key=True)
+
 
 def connect_db(app):
     """Connect this database to provided Flask app.
