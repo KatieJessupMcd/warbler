@@ -380,6 +380,22 @@ def show_likes(user_id):
 ##############################################################################
 # Flag routes:
 
+@app.route('/flag/<int:msg_id>', methods=["GET"])
+def create_flag(msg_id):
+    """need to hook this up properly to the db"""
+    user_id = g.user.id
+    flag = Like.query.filter_by(msg_id=msg_id, user_id=user_id).first()
+    if flav:
+        db.session.delete(like)
+        db.session.commit()
+
+    else:
+        new_like = Like(msg_id=msg_id, user_id=user_id)
+        db.session.add(new_like)
+        db.session.commit()
+
+    return redirect('/flag/new')
+
 @app.route('/flag/new', methods=["GET", "POST"])
 def flag_add():
     """Add a flag message:
@@ -394,7 +410,6 @@ def flag_add():
     form = FlagForm()
     
     if form.validate_on_submit():
-        print("IN SUBMIT FORM") 
         msg = Message(text=form.text.data)
         g.user.messages.append(msg)
         db.session.commit()
@@ -403,20 +418,6 @@ def flag_add():
     return render_template('flags/new.html', form=form)
 
 
-@app.route('/flag/<int:msg_id>', methods=["GET"])
-def create_flag(msg_id):
-    user_id = g.user.id
-    like = Like.query.filter_by(msg_id=msg_id, user_id=user_id).first()
-    if like:
-        db.session.delete(like)
-        db.session.commit()
-
-    else:
-        new_like = Like(msg_id=msg_id, user_id=user_id)
-        db.session.add(new_like)
-        db.session.commit()
-
-    return redirect('/flag/new')
 
 
 ##############################################################################
