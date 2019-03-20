@@ -64,7 +64,16 @@
                 {% endif %}
               </span>
             </a>
-
+          <a href='/flag/{{ msg.id }}'>
+            <span class="flag">
+            {% if msg.id in Like %}
+                <i class="fas fa-flag"></i>
+                {% else %}
+                <i class="far fa-flag"></i>
+                {% endif %}
+              </span>
+            </a>
+          
             <a href="/messages/{{ msg.id  }}" class="message-link"/>
             <a href="/users/{{ msg.user.id }}">
               <img src="{{ msg.user.image_url }}" alt="" class="timeline-image">
