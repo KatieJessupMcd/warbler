@@ -5,7 +5,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
 from forms import UserAddForm, LoginForm, MessageForm, EditUserProfileForm, FlagForm
-from models import db, connect_db, User, Message, Like
+from models import db, connect_db, User, Message, Like, Flag
 
 CURR_USER_KEY = "curr_user"
 
@@ -384,14 +384,14 @@ def show_likes(user_id):
 def create_flag(msg_id):
     """need to hook this up properly to the db"""
     user_id = g.user.id
-    flag = Like.query.filter_by(msg_id=msg_id, user_id=user_id).first()
-    if flav:
-        db.session.delete(like)
+    flag = Flag.query.filter_by(msg_id=msg_id, user_id=user_id).first()
+    if flag:
+        db.session.delete(flag)
         db.session.commit()
 
     else:
-        new_like = Like(msg_id=msg_id, user_id=user_id)
-        db.session.add(new_like)
+        new_flag = Flag(msg_id=msg_id, user_id=user_id)
+        db.session.add(new_flag)
         db.session.commit()
 
     return redirect('/flag/new')
