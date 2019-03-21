@@ -64,6 +64,7 @@ class User(db.Model):
     )
 
     messages = db.relationship('Message', backref='user')
+    flags = db.relationship('Flag', backref='user')
     liked_msgs = db.relationship(
         'Message', secondary="likes", backref='users_like')
 
@@ -171,6 +172,7 @@ class Like(db.Model):
 
     user_id = db.Column(
         db.Integer, db.ForeignKey('users.id'), primary_key=True)
+
 
 class Flag(db.Model):
     """Connection of flag <- users"""
